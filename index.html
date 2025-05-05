@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Space Battle Arena - 2 Player Game -->
+    <title>Space Battle Arena - 2 Player Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body>
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="theme-toggle">
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="toggle-slider">
+                    <span class="toggle-icon sun-icon">☀️</span>
+                    <span class="toggle-icon moon-icon">🌙</span>
+                </span>
+            </label>
+        </div>
+        
+        <h1 class="game-title text-4xl md:text-5xl font-bold mb-6 text-center">Space Battle Arena</h1>
+        <p class="text-indigo-300 dark:text-indigo-300 mb-8 text-center max-w-2xl">Two-player local multiplayer space combat game. Destroy your opponent's ship to win!</p>
+        
+        <div class="game-container w-full max-w-4xl">
+            <!-- Game Stats -->
+            <div class="bg-gray-800 dark:bg-gray-800 p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="w-full md:w-2/5">
+                    <div class="flex items-center mb-2">
+                        <div class="w-6 h-6 rounded-full bg-blue-500 mr-2"></div>
+                        <span class="text-blue-400 font-semibold">Player 1</span>
+                        <span class="ml-auto text-blue-400" id="player1-score">0</span>
+                    </div>
+                    <div class="health-bar">
+                        <div class="health-fill-1" id="health-bar-1" style="width: 100%;"></div>
+                    </div>
+                </div>
+                
+                <div class="text-white font-bold text-xl game-title">VS</div>
+                
+                <div class="w-full md:w-2/5">
+                    <div class="flex items-center mb-2">
+                        <div class="w-6 h-6 rounded-full bg-red-500 mr-2"></div>
+                        <span class="text-red-400 font-semibold">Player 2</span>
+                        <span class="ml-auto text-red-400" id="player2-score">0</span>
+                    </div>
+                    <div class="health-bar">
+                        <div class="health-fill-2" id="health-bar-2" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Game Area -->
+            <div class="game-area w-full" id="game-area" style="height: 70vh; min-height: 400px;">
+                <div class="game-grid"></div>
+                <!-- Spaceships will be added here by JS -->
+            </div>
+            
+            <!-- Controls Info -->
+            <div class="bg-gray-800 dark:bg-gray-800 p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="player-controls player1-controls p-3">
+                    <h3 class="text-blue-400 font-semibold mb-2">Player 1 Controls:</h3>
+                    <p class="text-gray-300 text-sm">
+                        Move: <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> | 
+                        Shoot: <span class="key">Space</span>
+                    </p>
+                </div>
+                <div class="player-controls player2-controls p-3">
+                    <h3 class="text-red-400 font-semibold mb-2">Player 2 Controls:</h3>
+                    <p class="text-gray-300 text-sm">
+                        Move: <span class="key">↑</span><span class="key">←</span><span class="key">↓</span><span class="key">→</span> | 
+                        Shoot: <span class="key">Enter</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Start Game Overlay -->
+        <div class="controls-overlay" id="start-screen">
+            <h2 class="game-title text-3xl md:text-4xl font-bold mb-6 text-center">Space Battle Arena</h2>
+            <p class="text-indigo-300 dark:text-indigo-300 mb-8 text-center max-w-md">Two-player local multiplayer space combat game. Destroy your opponent's ship to win!</p>
+            <button id="start-selection" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg">
+                Choose Your Ship
+            </button>
+        </div>
+        
+        <!-- Skin Selection Overlay -->
+        <div class="skin-selection-overlay" id="skin-selection-screen" style="display: none;">
+            <div class="skin-selection-container">
+                <h2 class="game-title text-3xl md:text-4xl font-bold mb-2 text-center">Choose Your Ships</h2>
+                <p class="text-center text-indigo-300 mb-6">Select a ship skin for each player</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Player 1 Skin Selection -->
+                    <div class="player-skin-selection" style="border: 2px solid #3b82f6;">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-blue-400">Player 1</h3>
+                            <div class="player-ready" id="player1-ready-indicator">✓</div>
+                        </div>
+                        
+                        <div class="skin-preview mt-4" id="player1-preview">
+                            <!-- Preview will be added by JS -->
+                        </div>
+                        
+                        <div class="skin-grid" id="player1-skins">
+                            <!-- Skin options will be added by JS -->
+                        </div>
+                        
+                        <button class="ready-btn player1-ready-btn" id="player1-ready">I'm Ready</button>
+                    </div>
+                    
+                    <!-- Player 2 Skin Selection -->
+                    <div class="player-skin-selection" style="border: 2px solid #ef4444;">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-red-400">Player 2</h3>
+                            <div class="player-ready" id="player2-ready-indicator">✓</div>
+                        </div>
+                        
+                        <div class="skin-preview mt-4" id="player2-preview">
+                            <!-- Preview will be added by JS -->
+                        </div>
+                        
+                        <div class="skin-grid" id="player2-skins">
+                            <!-- Skin options will be added by JS -->
+                        </div>
+                        
+                        <button class="ready-btn player2-ready-btn" id="player2-ready">I'm Ready</button>
+                    </div>
+                </div>
+                
+                <button class="start-game-btn" id="start-game">Start Battle</button>
+            </div>
+        </div>
+        
+        <!-- Game Over Overlay -->
+        <div class="game-over-overlay" id="game-over-screen">
+            <h2 class="game-title text-3xl md:text-4xl font-bold mb-4 text-center">Game Over</h2>
+            <p class="winner-text text-2xl md:text-3xl font-bold mb-8" id="winner-text"></p>
+            <div class="flex gap-4">
+                <button id="play-again" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg">
+                    Play Again
+                </button>
+                <button id="change-ships" class="btn bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full shadow-lg">
+                    Change Ships
+                </button>
+            </div>
+        </div>
+    </div>
+
+   <script src="./assets/game.js"></script>
+</body>
